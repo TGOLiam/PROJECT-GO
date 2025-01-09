@@ -1,4 +1,4 @@
-def make_tool_declaration(name, tool_description, required_param='', parameters=None, ):
+def make_tool_declaration(name: str, tool_description: str, required_param='', parameters=None) -> dict:
     parameter_properties = {}
 
     if parameters is not None:
@@ -17,7 +17,7 @@ def make_tool_declaration(name, tool_description, required_param='', parameters=
         }
     }
 
-def make_parameter_declaration(name: str, description: str, return_type: str):
+def make_parameter_declaration(name: str, description: str, return_type: str) -> dict:
     return{
         f"{name}": {
             "type": return_type,
@@ -25,26 +25,26 @@ def make_parameter_declaration(name: str, description: str, return_type: str):
         }
     }
 
-def userMessage(content):
+def UserMessage(content: str) -> dict:
     return {
         "role": "user",
         "content": content
     }
 
-def SystemMessage(content):
+def SystemMessage(content: str) -> dict:
     return {
         "role": "system",
         "content": content
     }
 
-def AIMessage(content, tool_calls=None):
+def AIMessage(content: str, tool_calls=None) -> dict:
     return {
         "role": "assistant",
         "content": content,
         "tool_calls": tool_calls
     }
 
-def ToolMessage(content, tool_name, tool_call_id):
+def ToolMessage(content: str, tool_name: str, tool_call_id: str) -> dict:
     return {
         "role": "tool",
         "name": tool_name,
@@ -52,7 +52,7 @@ def ToolMessage(content, tool_name, tool_call_id):
         "tool_call_id": tool_call_id
     }
 
-def testAPI():
+def testAPI() -> bool:
     import requests,os
     url = "https://api.mistral.ai/v1/models/mistral-large-latest"
 

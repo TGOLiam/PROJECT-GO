@@ -6,39 +6,16 @@ def tool(func):
     available_callable_tools[func.__name__] = func
     return func
 
-
 @tool
 def call_calculator(expression: str) -> int:
-    """
-    Evaluates a simple mathematical expression and returns the result.
-    Args:
-        expression: A string representing a mathematical expression (e.g., '12 + 8').
-
-    Useful for basic arithmetic operations like addition, subtraction, multiplication, etc.
-    """
     return eval(expression)
 
 @tool
 def fetch_weather_data(location: str) -> dict:
-    """
-    Fetches weather data for a specified location.
-    Args:
-        location: The name of the location for which to retrieve weather data.
-
-    Useful for providing real-time weather information for specific locations.
-    """
-    # Simulate an API response (dummy data for illustration)
     return json.dumps({"location": location, "temperature": "22°C", "condition": "Clear"})
 
 @tool
 def get_time_date_weekday() -> dict:
-    """
-    Retrieves the current local time as a formatted string.
-
-    Designed for scenarios where the local time is needed,
-    such as in interactive systems or when specifically requested by users.
-    """
-
     import datetime
     import asyncio
 
