@@ -1,6 +1,8 @@
-from utils import *
+from utils import make_parameter_declaration, make_tool_declaration
 import json
 available_callable_tools = {}
+
+#Note: All of these are just dummy functions to demonstrate the concept of tools
 
 def tool(func):
     available_callable_tools[func.__name__] = func
@@ -26,19 +28,12 @@ def get_time_date_weekday() -> dict:
     return json.dumps({"time": formatted_time, "date": date, "weekday": weekday})
 
 @tool
-def get_program_status(program_code):
-    status = False
-    error = ""
+def pirate_agent(query: str) -> str:
+    from agent import Agent
 
-    if program_code == "901":
-        status = True
-    else:
-        error = "Not found"
-    return json.dumps({
-        "status": status,
-        "error": error
-    })
-
+    pirate_agent = Agent(system_instructions="You are a pirate agent.")
+    response = pirate_agent.invoke_chat_query(query=query)
+    return response.choices[0].message.content
 
 available_tools = [
     make_tool_declaration(
@@ -60,19 +55,18 @@ available_tools = [
     ),
 
     make_tool_declaration(
-        name="get_program_status",
-        tool_description="Retrieves the current status of a program.",
+        name="pirate_agent",
+        tool_description="A pirate-themed agent. You will paraphrase pirate_agent's responses back to the user.",
         parameters={
               **make_parameter_declaration(
-                 name="program_code",
-                 description="The code of the program to retrieve the status for.",
+                 name="query",
+                 description="The query to send to the pirate agent.",
                  return_type="string"
               )
         },
-        required_param="program_code"
-    )
-]
+    ),
 
+]
 
 if __name__ == "__main__":
     for i, k in available_callable_tools.items():

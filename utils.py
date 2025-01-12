@@ -52,6 +52,9 @@ def ToolMessage(content: str, tool_name: str, tool_call_id: str) -> dict:
         "tool_call_id": tool_call_id
     }
 
+def word_count(text: str) -> int:
+    return len(text.split())
+
 def testAPI() -> bool:
     import requests,os
     url = "https://api.mistral.ai/v1/models/mistral-large-latest"
@@ -73,3 +76,7 @@ def testAPI() -> bool:
 
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")
+
+
+
+    

@@ -1,8 +1,7 @@
 import os, json,time
 from mistralai import Mistral
-from tools import *
-from utils import *
-#TODO Optimize the code for error handling and exception handling
+from tools import available_callable_tools, available_tools
+from utils import word_count, UserMessage, SystemMessage, AIMessage, ToolMessage, testAPI
 
 with open('instructions.txt', 'r') as file:
   prompt_instructions = file.read()
@@ -10,7 +9,8 @@ with open('instructions.txt', 'r') as file:
 class Agent:
     def __init__(
         self,
-        chat_history: list[dict], #Required
+        system_instructions: str = prompt_instructions,
+        chat_history: list[dict] = [],
         client= Mistral(api_key=os.environ["MISTRAL_API_KEY"]),
         model: str = "mistral-large-latest", 
         tools: list[dict] = available_tools,
@@ -18,8 +18,12 @@ class Agent:
         tool_choice: str = "auto",
         max_tokens: int = 300,
         temperature: float = 0.56,
-        stream: bool = False
+        stream: bool = False,
+        window_size: int = 7,
+        use_single_query: bool = False,
+        allow_print: bool = True
     ):
+        chat_history.append(SystemMessage(system_instructions))
         self.client = client
         self.chat_history = chat_history
         self.model = model
@@ -29,6 +33,9 @@ class Agent:
         self.temperature = temperature
         self.stream = stream
         self.callable_tools = callable_tools
+        self.total_tokens = 0
+        self.window_size = window_size
+        
 
     def invoke_chat_query(self, query: str = None) -> dict:
         if query is not None:
@@ -51,16 +58,24 @@ class Agent:
 
                 self.chat_history.append(AIMessage(content=content, tool_calls=tool_calls))
 
+                self.total_tokens += usage.total_tokens
+
                 print(f"\033[92mAssistant: {response.choices[0].message.content}\033[0m")
                 print("---------")
                 print(f"Tool calls: {tool_calls}")
-                print(f"Total Token Usage: {usage.total_tokens}")
+                print(f"Token Usage: {usage.total_tokens}")
                 print(f"AI Token Usage: {usage.completion_tokens}")
+                print(f"Total Token Usage: {self.total_tokens}")
+                print(f"Word Count: {word_count(content)}")
 
                 if tool_calls is not None: 
                     self.execute_tool_call(tool_calls)
                     time.sleep(1)
                     self.invoke_chat_query()
+
+                if len(self.chat_history) > self.window_size + 1:
+                    print(f"Larger than {self.window_size}")
+                    self.delete_past_messages()
 
                 return response
 
@@ -88,29 +103,29 @@ class Agent:
             print(f"An error occurred: {e}")
             time.sleep(5)
 
-
-
-
+    def delete_past_messages(self):
+        total_len = len(self.chat_history)
+        threshold = total_len - self.window_size
+        for i in range(1, threshold):
+            self.chat_history.pop(1)
+    
 
 def console_chat():
     if testAPI() == False:
         print("Theres something wrong..")
 
-    messages = [SystemMessage(prompt_instructions)]
-    agent = Agent(chat_history=messages)
+    agent = Agent()
 
     while True:
         query = input("User> ")
-
+        
         if query.lower() == "print":
-            for i in messages:
+            for i in agent.chat_history:
                 print(i)
             continue
 
         agent.invoke_chat_query(query=query)
         
-
-
 if __name__ == "__main__":
     console_chat()        
     
