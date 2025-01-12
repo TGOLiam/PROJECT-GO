@@ -1,11 +1,11 @@
 from utils import make_parameter_declaration, make_tool_declaration
 import json
-available_callable_tools = {}
+DEFAULT_callable_tools = {}
 
 #Note: All of these are just dummy functions to demonstrate the concept of tools
 
 def tool(func):
-    available_callable_tools[func.__name__] = func
+    DEFAULT_callable_tools[func.__name__] = func
     return func
 
 @tool
@@ -27,15 +27,7 @@ def get_time_date_weekday() -> dict:
     weekday = x.strftime("%A")
     return json.dumps({"time": formatted_time, "date": date, "weekday": weekday})
 
-@tool
-def pirate_agent(query: str) -> str:
-    from agent import Agent
-
-    pirate_agent = Agent(system_instructions="You are a pirate agent.")
-    response = pirate_agent.invoke_chat_query(query=query)
-    return response.choices[0].message.content
-
-available_tools = [
+DEFAULT_tools = [
     make_tool_declaration(
         name="get_time_date_weekday",
         tool_description="Retrieves the current local time as a formatted string.",
@@ -69,7 +61,7 @@ available_tools = [
 ]
 
 if __name__ == "__main__":
-    for i, k in available_callable_tools.items():
+    for i, k in DEFAULT_callable_tools.items():
         print(i, k) 
 
         

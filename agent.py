@@ -1,9 +1,9 @@
 import os, json,time
 from mistralai import Mistral
-from tools import available_callable_tools, available_tools
+from tools.DEFAULT_AGENT import DEFAULT_tools, DEFAULT_callable_tools
 from utils import word_count, UserMessage, SystemMessage, AIMessage, ToolMessage, testAPI
 
-with open('instructions.txt', 'r') as file:
+with open('instructions/DEFAULT_AGENT.txt', 'r') as file:
   prompt_instructions = file.read()
 
 class Agent:
@@ -13,14 +13,13 @@ class Agent:
         chat_history: list[dict] = [],
         client= Mistral(api_key=os.environ["MISTRAL_API_KEY"]),
         model: str = "mistral-large-latest", 
-        tools: list[dict] = available_tools,
-        callable_tools: dict = available_callable_tools,
+        tools: list[dict] = DEFAULT_tools,
+        callable_tools: dict = DEFAULT_callable_tools,
         tool_choice: str = "auto",
         max_tokens: int = 300,
         temperature: float = 0.56,
         stream: bool = False,
         window_size: int = 7,
-        use_single_query: bool = False,
         allow_print: bool = True
     ):
         chat_history.append(SystemMessage(system_instructions))
@@ -35,7 +34,7 @@ class Agent:
         self.callable_tools = callable_tools
         self.total_tokens = 0
         self.window_size = window_size
-        
+        self.allow_print = allow_print
 
     def invoke_chat_query(self, query: str = None) -> dict:
         if query is not None:
@@ -60,13 +59,14 @@ class Agent:
 
                 self.total_tokens += usage.total_tokens
 
-                print(f"\033[92mAssistant: {response.choices[0].message.content}\033[0m")
-                print("---------")
-                print(f"Tool calls: {tool_calls}")
-                print(f"Token Usage: {usage.total_tokens}")
-                print(f"AI Token Usage: {usage.completion_tokens}")
-                print(f"Total Token Usage: {self.total_tokens}")
-                print(f"Word Count: {word_count(content)}")
+                if self.allow_print:
+                    print(f"\033[92mAssistant: {response.choices[0].message.content}\033[0m")
+                    print("---------")
+                    print(f"Tool calls: {tool_calls}")
+                    print(f"Token Usage: {usage.total_tokens}")
+                    print(f"AI Token Usage: {usage.completion_tokens}")
+                    print(f"Total Token Usage: {self.total_tokens}")
+                    print(f"Word Count: {word_count(content)}")
 
                 if tool_calls is not None: 
                     self.execute_tool_call(tool_calls)
