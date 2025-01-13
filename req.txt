@@ -1,2 +1,3 @@
 mistralai
 requests
+tavily-python

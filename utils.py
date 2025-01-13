@@ -1,11 +1,11 @@
-def make_tool_declaration(name: str, tool_description: str, required_param='', parameters=None) -> dict:
+def make_tool_declaration(name: str, tool_description: str, required_param=[], parameters=None) -> dict:
     parameter_properties = {}
 
     if parameters is not None:
         parameter_properties = {
             "type": "object",
             "properties": parameters,
-            "required": [required_param]
+            "required": required_param
         }
 
     return {

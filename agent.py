@@ -1,6 +1,6 @@
 import os, json,time
 from mistralai import Mistral
-from tools.DEFAULT_AGENT import DEFAULT_tools, DEFAULT_callable_tools
+from tools.DEFAULT_AGENT_TOOLS import DEFAULT_tools, DEFAULT_callable_tools
 from utils import word_count, UserMessage, SystemMessage, AIMessage, ToolMessage, testAPI
 
 with open('instructions/DEFAULT_AGENT.txt', 'r') as file:
@@ -20,9 +20,11 @@ class Agent:
         temperature: float = 0.56,
         stream: bool = False,
         window_size: int = 7,
-        allow_print: bool = True
+        allow_print: bool = True,
+        response_format: dict = None,
     ):
-        chat_history.append(SystemMessage(system_instructions))
+        if chat_history == []:
+            chat_history.append(SystemMessage(system_instructions))
         self.client = client
         self.chat_history = chat_history
         self.model = model
@@ -35,6 +37,7 @@ class Agent:
         self.total_tokens = 0
         self.window_size = window_size
         self.allow_print = allow_print
+        self.response_format = response_format
 
     def invoke_chat_query(self, query: str = None) -> dict:
         if query is not None:
@@ -49,7 +52,8 @@ class Agent:
                     tool_choice=self.tool_choice,
                     max_tokens=self.max_tokens,
                     temperature=self.temperature,
-                    stream=self.stream
+                    stream=self.stream,
+                    response_format = self.response_format
                 )
                 tool_calls = response.choices[0].message.tool_calls
                 content = response.choices[0].message.content
@@ -71,10 +75,9 @@ class Agent:
                 if tool_calls is not None: 
                     self.execute_tool_call(tool_calls)
                     time.sleep(1)
-                    self.invoke_chat_query()
+                    return self.invoke_chat_query()
 
                 if len(self.chat_history) > self.window_size + 1:
-                    print(f"Larger than {self.window_size}")
                     self.delete_past_messages()
 
                 return response
@@ -106,7 +109,7 @@ class Agent:
     def delete_past_messages(self):
         total_len = len(self.chat_history)
         threshold = total_len - self.window_size
-        for i in range(1, threshold):
+        for i in range(1, threshold + 1):
             self.chat_history.pop(1)
     
 
@@ -114,11 +117,11 @@ def console_chat():
     if testAPI() == False:
         print("Theres something wrong..")
 
-    agent = Agent()
+    agent = Agent(window_size=10)
 
     while True:
         query = input("User> ")
-        
+
         if query.lower() == "print":
             for i in agent.chat_history:
                 print(i)

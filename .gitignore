@@ -1,5 +1,5 @@
 env/
-__pycache__/
+__pycache__
 TODO.txt
 test.py 
 local_agent.py
