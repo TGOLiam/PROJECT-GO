@@ -55,8 +55,7 @@ DEFAULT_tools = [
               )
         },
     ),
-
-
+    
     make_tool_declaration(
         name="web_agent",
         tool_description="Ask this web searching agent for when answering accurate and detailed information related queries",
