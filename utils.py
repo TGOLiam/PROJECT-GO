@@ -31,16 +31,18 @@ def make_parameter_declaration(name: str, description: str, return_type: str) ->
         }
     }
 
-def UserMessage(content: str) -> dict:
+def UserMessage(content: str, prefix: str = "<USER>") -> dict:
+    content = f"{prefix} {content}"
     return {
         "role": "user",
         "content": content
     }
 
-def SystemMessage(content: str) -> dict:
+def SystemMessage(content: str, prefix: bool = False) -> dict:
     return {
         "role": "system",
-        "content": content
+        "content": content,
+        "prefix": prefix
     }
 
 def AIMessage(content: str, tool_calls=None) -> dict:
@@ -82,7 +84,6 @@ def testAPI() -> bool:
 
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")
-
 
 
     

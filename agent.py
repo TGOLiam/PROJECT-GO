@@ -129,6 +129,12 @@ def console_chat():
             for i in agent.chat_history:
                 print(i)
             continue
+        elif query.lower() == "test":
+
+            agent.chat_history.append(UserMessage("Motion Detected!", prefix="<PROGRAM-134>"))
+
+            agent.invoke_chat_query()
+            continue
 
         agent.invoke_chat_query(query=query)
         
