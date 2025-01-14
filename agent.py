@@ -1,15 +1,17 @@
-import os, json,time
+import os, json,time, yaml
 from mistralai import Mistral
+import google.generativeai as genai
+from google.ai.generativelanguage_v1beta.types import content
 from tools.DEFAULT_AGENT_TOOLS import DEFAULT_tools, DEFAULT_callable_tools
-from utils import word_count, UserMessage, SystemMessage, AIMessage, ToolMessage, testAPI
+from utils import word_count, UserMessage, SystemMessage, AIMessage, ToolMessage, testAPI, system_instructions
 
-with open('instructions/DEFAULT_AGENT.txt', 'r') as file:
-  prompt_instructions = file.read()
+
 
 class Agent:
     def __init__(
         self,
-        system_instructions: str = prompt_instructions,
+        agent_name = "Main",
+        system_instructions: str = system_instructions['DEFAULT_AGENT'],
         chat_history: list[dict] = [],
         client= Mistral(api_key=os.environ["MISTRAL_API_KEY"]),
         model: str = "mistral-large-latest", 
@@ -19,7 +21,7 @@ class Agent:
         max_tokens: int = 300,
         temperature: float = 0.56,
         stream: bool = False,
-        window_size: int = 7,
+        window_size: int = 10,
         allow_print: bool = True,
         response_format: dict = None,
     ):
@@ -38,6 +40,7 @@ class Agent:
         self.window_size = window_size
         self.allow_print = allow_print
         self.response_format = response_format
+        self.agent_name = agent_name
 
     def invoke_chat_query(self, query: str = None) -> dict:
         if query is not None:
@@ -111,13 +114,13 @@ class Agent:
         threshold = total_len - self.window_size
         for i in range(1, threshold + 1):
             self.chat_history.pop(1)
-    
+
 
 def console_chat():
     if testAPI() == False:
         print("Theres something wrong..")
 
-    agent = Agent(window_size=10)
+    agent = Agent()
 
     while True:
         query = input("User> ")

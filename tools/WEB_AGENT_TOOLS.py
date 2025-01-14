@@ -13,10 +13,6 @@ def full_search(query):
     response = tavily_client.search(query=query, max_results=5, search_depth='advanced')
     return json.dumps(response)
 
-
-
-    
-
 WEB_TOOLS = [
     make_tool_declaration(
         name="full_search",

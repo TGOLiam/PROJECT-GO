@@ -1,3 +1,9 @@
+import yaml
+with open("system_instructions.yaml", "r") as file:
+    data = yaml.safe_load(file)
+    system_instructions = data['system_instructions']
+
+
 def make_tool_declaration(name: str, tool_description: str, required_param=[], parameters=None) -> dict:
     parameter_properties = {}
 

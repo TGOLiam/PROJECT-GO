@@ -6,7 +6,6 @@ def tool(func):
     MATH_CALLABLE_TOOLS[func.__name__] = func
     return func
 
-
 @tool
 def basic_arithmetic(expression):
     try:
@@ -15,9 +14,6 @@ def basic_arithmetic(expression):
         return str(result)  # Convert result to string
     except Exception as e:
         return f"Error: {e}"  # Return error message as string
-
-
-
 
 MATH_TOOLS = [
     make_tool_declaration(
@@ -32,8 +28,6 @@ MATH_TOOLS = [
         },
         required_param=['expression']
     ),
-
-
 ]
 
 if __name__ == "__main__":

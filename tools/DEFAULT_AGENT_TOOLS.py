@@ -1,10 +1,8 @@
-from utils import make_parameter_declaration, make_tool_declaration
-import json, os, time
+from utils import make_parameter_declaration, make_tool_declaration, system_instructions
+import json, os, time, yaml
 from tools.MATH_AGENT import MATH_CALLABLE_TOOLS, MATH_TOOLS
 from tools.WEB_AGENT_TOOLS import WEB_CALLABLE_TOOLS, WEB_TOOLS
 
-with open('instructions/WEB_AGENT.txt', 'r') as file:
-  web_instructions = file.read()
 
 DEFAULT_callable_tools = {}
 def tool(func):
@@ -31,9 +29,10 @@ def web_agent(query):
     from agent import Agent
 
     web = Agent(
-        system_instructions=web_instructions,
+        system_instructions=system_instructions['WEB_AGENT'],
         allow_print=False,
         window_size=4,
+        max_tokens=1000,
         tools=WEB_TOOLS,
         callable_tools=WEB_CALLABLE_TOOLS,
     )
@@ -41,7 +40,6 @@ def web_agent(query):
     response = web.invoke_chat_query(query)
     time.sleep(1)
     return response.choices[0].message.content
-
 
 DEFAULT_tools = [
     make_tool_declaration(
@@ -55,10 +53,10 @@ DEFAULT_tools = [
               )
         },
     ),
-    
+
     make_tool_declaration(
         name="web_agent",
-        tool_description="Ask this web searching agent for when answering accurate and detailed information related queries",
+        tool_description="Ask this web searching agent for when answering accurate and detailed information related queries. You will summarize the reply back to the user",
         parameters={
               **make_parameter_declaration(
                  name="query",
