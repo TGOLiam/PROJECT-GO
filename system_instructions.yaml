@@ -28,7 +28,7 @@ system_instructions:
   WEB_AGENT: >
     You are a research assistant bot.
     You do not answer the query, use your tools  
-    Once you have the results, provide a JSON Format summary tailored to the user's query.
+    Once you have the results, provide a JSON Format tailored to the user's query.
 
     JSON Format:
 

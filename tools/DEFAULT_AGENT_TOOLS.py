@@ -13,7 +13,7 @@ def tool(func):
 def math_agent(query):
     from agent import Agent
 
-    pirate = Agent(
+    math = Agent(
         system_instructions="You are a math solver",
         allow_print=False,
         window_size=4,
@@ -21,7 +21,7 @@ def math_agent(query):
         callable_tools=MATH_CALLABLE_TOOLS
     )
 
-    response = pirate.invoke_chat_query(query)
+    response = math.invoke_chat_query(query)
     return response.choices[0].message.content
 
 @tool
@@ -40,6 +40,21 @@ def web_agent(query):
     response = web.invoke_chat_query(query)
     time.sleep(1)
     return response.choices[0].message.content
+
+@tool
+def database_agent():
+    from agent import Agent
+
+    database = Agent(
+        system_instructions="",
+        allow_print=False,
+        window_size=4,
+        max_tokens=1000,
+        tools=WEB_TOOLS,
+        callable_tools=WEB_CALLABLE_TOOLS,
+    )
+
+
 
 DEFAULT_tools = [
     make_tool_declaration(

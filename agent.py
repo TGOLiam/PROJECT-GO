@@ -5,8 +5,6 @@ from google.ai.generativelanguage_v1beta.types import content
 from tools.DEFAULT_AGENT_TOOLS import DEFAULT_tools, DEFAULT_callable_tools
 from utils import word_count, UserMessage, SystemMessage, AIMessage, ToolMessage, testAPI, system_instructions
 
-
-
 class Agent:
     def __init__(
         self,
